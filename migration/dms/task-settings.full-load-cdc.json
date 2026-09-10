@@ -1,0 +1,62 @@
+{
+  "TargetMetadata": {
+    "SupportLobs": true,
+    "LimitedSizeLobMode": true,
+    "LobMaxSize": 64,
+    "BatchApplyEnabled": true,
+    "ParallelLoadThreads": 0
+  },
+  "FullLoadSettings": {
+    "TargetTablePrepMode": "DO_NOTHING",
+    "MaxFullLoadSubTasks": 8,
+    "CommitRate": 10000,
+    "CreatePkAfterFullLoad": false,
+    "StopTaskCachedChangesApplied": false,
+    "StopTaskCachedChangesNotApplied": false
+  },
+  "ValidationSettings": {
+    "EnableValidation": true,
+    "ValidationMode": "ROW_LEVEL",
+    "ThreadCount": 5,
+    "PartitionSize": 10000,
+    "FailureMaxCount": 10000,
+    "HandleCollationDiff": true,
+    "RecordFailureDelayLimitInMinutes": 0,
+    "TableFailureMaxCount": 1000
+  },
+  "Logging": {
+    "EnableLogging": true,
+    "LogComponents": [
+      { "Id": "SOURCE_UNLOAD", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "SOURCE_CAPTURE", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "TARGET_LOAD", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "TARGET_APPLY", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "VALIDATOR_EXTERNAL", "Severity": "LOGGER_SEVERITY_DEFAULT" }
+    ]
+  },
+  "ErrorBehavior": {
+    "DataErrorPolicy": "LOG_ERROR",
+    "DataTruncationErrorPolicy": "LOG_ERROR",
+    "DataErrorEscalationPolicy": "SUSPEND_TABLE",
+    "TableErrorPolicy": "SUSPEND_TABLE",
+    "RecoverableErrorCount": -1,
+    "RecoverableErrorInterval": 5,
+    "ApplyErrorDeletePolicy": "IGNORE_RECORD",
+    "ApplyErrorInsertPolicy": "LOG_ERROR",
+    "ApplyErrorUpdatePolicy": "LOG_ERROR",
+    "FullLoadIgnoreConflicts": true
+  },
+  "ChangeProcessingTuning": {
+    "BatchApplyEnabled": true,
+    "BatchApplyPreserveTransaction": true,
+    "MinTransactionSize": 1000,
+    "CommitTimeout": 1,
+    "MemoryLimitTotal": 1024,
+    "MemoryKeepTime": 60
+  },
+  "ChangeProcessingDdlHandlingPolicy": {
+    "HandleSourceTableDropped": true,
+    "HandleSourceTableTruncated": true,
+    "HandleSourceTableAltered": true
+  }
+}

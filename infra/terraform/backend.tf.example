@@ -1,0 +1,21 @@
+# backend.tf.example
+# ---------------------------------------------------------------------------
+# Remote state configuration. COPY this file to `backend.tf` inside an
+# environment folder (e.g., environments/dev/) and fill in the real names
+# produced by the `bootstrap/` stack.
+#
+# Why remote state?
+#   - Shared: the whole team reads/writes the same state.
+#   - Locked: DynamoDB prevents two simultaneous applies from corrupting it.
+#   - Durable: S3 keeps versioned history.
+# ---------------------------------------------------------------------------
+
+terraform {
+  backend "s3" {
+    bucket         = "sunrise-tfstate-CHANGE_ME"       # from bootstrap output
+    key            = "environments/dev/terraform.tfstate" # unique per environment
+    region         = "us-east-1"
+    dynamodb_table = "sunrise-tflock-CHANGE_ME"        # from bootstrap output
+    encrypt        = true
+  }
+}

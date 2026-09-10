@@ -1,0 +1,38 @@
+{
+  "TargetMetadata": {
+    "SupportLobs": true,
+    "LimitedSizeLobMode": true,
+    "LobMaxSize": 64,
+    "BatchApplyEnabled": true
+  },
+  "FullLoadSettings": {
+    "TargetTablePrepMode": "DO_NOTHING",
+    "CommitRate": 10000
+  },
+  "ValidationSettings": {
+    "EnableValidation": true,
+    "ValidationMode": "ROW_LEVEL",
+    "ThreadCount": 5,
+    "HandleCollationDiff": true
+  },
+  "Logging": {
+    "EnableLogging": true,
+    "LogComponents": [
+      { "Id": "SOURCE_CAPTURE", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "TARGET_APPLY", "Severity": "LOGGER_SEVERITY_DEFAULT" }
+    ]
+  },
+  "ErrorBehavior": {
+    "DataErrorPolicy": "LOG_ERROR",
+    "TableErrorPolicy": "SUSPEND_TABLE",
+    "ApplyErrorDeletePolicy": "IGNORE_RECORD",
+    "FullLoadIgnoreConflicts": true
+  },
+  "ChangeProcessingTuning": {
+    "BatchApplyEnabled": true,
+    "BatchApplyPreserveTransaction": true,
+    "MinTransactionSize": 1000,
+    "CommitTimeout": 1,
+    "MemoryLimitTotal": 1024
+  }
+}

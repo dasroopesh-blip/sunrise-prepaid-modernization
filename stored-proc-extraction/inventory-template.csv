@@ -1,0 +1,7 @@
+sp_id,database,schema,proc_name,business_purpose,loc_estimate,complexity,reads_tables,writes_tables,calls_other_procs,has_cursor,has_dynamic_sql,strategy,target_service,replication_articles,owner,status,notes
+SP-001,SunrisePmt,dbo,usp_PostSettlement,Settlement,180,Complex,"payment_transaction,settlement_batch","payment_transaction,settlement_ledger",usp_LogAudit,No,No,relocate-springboot,SettlementPostingService,42,payments-team,not-started,"Core posting logic; money math must match exactly"
+SP-002,SunrisePmt,dbo,usp_AuthorizeCard,Authorization,240,Complex,"account,card,limit_profile","auth_hold",usp_CheckFraud,No,Yes,relocate-springboot,AuthorizationService,60,payments-team,not-started,"Dynamic SQL for limit rules; review carefully"
+SP-003,SunrisePmt,dbo,usp_DailyReconcile,Reporting,120,Medium,"payment_transaction,settlement_ledger","recon_report",,Yes,No,glue-spark,n/a (settlement pipeline),35,data-team,not-started,"Batch aggregation; move to Glue Spark"
+SP-004,SunrisePmt,dbo,usp_CopyToArchive,Card Management,40,Simple,"payment_transaction","payment_archive",,No,No,drop-dms-crud,n/a,15,dba,not-started,"Pure data movement; DMS + repo CRUD replaces"
+SP-005,SunrisePmt,dbo,usp_GetCardStatus,Card Management,25,Simple,"card",,,No,No,relocate-springboot,CardService,8,payments-team,not-started,"Simple read; becomes repository method"
+SP-006,SunriseLgcy,dbo,usp_LegacyBatchXYZ,Reporting,600,Complex,"many","many",multiple,Yes,Yes,defer-rds-sqlserver,n/a,90,legacy-team,not-started,"Too complex for cutover; park on RDS SQL Server (2b)"

@@ -1,0 +1,44 @@
+{
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "include-all-dbo-tables",
+      "object-locator": { "schema-name": "dbo", "table-name": "%" },
+      "rule-action": "include",
+      "filters": []
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "2",
+      "rule-name": "exclude-cdc-system-tables",
+      "object-locator": { "schema-name": "cdc", "table-name": "%" },
+      "rule-action": "exclude",
+      "filters": []
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "10",
+      "rule-name": "schema-lowercase",
+      "rule-target": "schema",
+      "object-locator": { "schema-name": "dbo" },
+      "rule-action": "convert-lowercase"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "11",
+      "rule-name": "table-lowercase",
+      "rule-target": "table",
+      "object-locator": { "schema-name": "dbo", "table-name": "%" },
+      "rule-action": "convert-lowercase"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "12",
+      "rule-name": "column-lowercase",
+      "rule-target": "column",
+      "object-locator": { "schema-name": "dbo", "table-name": "%", "column-name": "%" },
+      "rule-action": "convert-lowercase"
+    }
+  ]
+}

@@ -96,6 +96,33 @@ flowchart LR
 
 > All diagrams use **Mermaid** (render on GitHub). IaC examples use **Terraform**.
 
+## 5b. End-to-End Build (IaC + Migration + Runbooks)
+
+Beyond the design docs, this repo now contains the full **E2E implementation scaffolding**:
+
+| Area | Path | What's inside |
+|------|------|---------------|
+| **Terraform IaC** | [`infra/terraform/`](infra/terraform/) | 14 beginner-friendly, commented modules + a wired `dev` environment. Foundation (network, kms, secrets, security, iam), Phase 1 (sqlserver-ec2-ag, eks, messaging, settlement, observability), Phase 2 (rds-aurora-postgresql, rds-sqlserver, dms, dr). Start at [`infra/terraform/README.md`](infra/terraform/README.md) and [`TERRAFORM-PRIMER.md`](infra/terraform/docs/TERRAFORM-PRIMER.md). |
+| **Migration (data)** | [`migration/`](migration/) | SCT assessment guide, DMS runbook + task/table-mapping JSON, and the full SQL Server → PostgreSQL [`type-mapping.md`](migration/type-mapping.md) (money → `numeric(19,4)`). |
+| **Stored-proc extraction** | [`stored-proc-extraction/`](stored-proc-extraction/) | Inventory + classification templates and a worked **before/after**: a T-SQL settlement proc relocated into a Spring Boot `@Service` with CRUD-only JPA repos + parity tests. |
+| **Validation** | [`validation/`](validation/) | 3-layer harness: DMS row validation, financial reconciliation SQL (zero settled-amount drift), and a logic-parity approach. |
+| **Runbooks** | [`runbooks/`](runbooks/) | Phase 1 AG cutover, Phase 2a Aurora cutover (per slice), 1,771-article replication decommission, and rollback. |
+
+### How the pieces fit
+
+```mermaid
+flowchart LR
+    IAC[infra/terraform\nprovision AWS] --> MIG[migration\nDMS/SCT move data]
+    IAC --> SP[stored-proc-extraction\nlogic -> Spring Boot]
+    MIG --> VAL[validation\n3-layer harness]
+    SP --> VAL
+    VAL --> RUN[runbooks\ncutover + rollback]
+```
+
+> IaC is **learning-grade scaffolding** (complete and coherent, sensible defaults) — review
+> sizing, CIDRs, and security before any production apply. Terraform couldn't be `validate`d in
+> this sandbox (no network to the HashiCorp registry); files passed manual brace/JSON checks.
+
 ## 6. Scope Note
 
 An earlier draft of `00`–`04` was framed as an analytics **lakehouse** (Iceberg/Athena) build.

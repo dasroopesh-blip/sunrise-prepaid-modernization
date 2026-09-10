@@ -1,0 +1,25 @@
+# environments/dev/terraform.tfvars.example
+# Copy to terraform.tfvars and edit. NEVER commit real secrets.
+
+project     = "sunrise"
+environment = "dev"
+aws_region  = "us-east-1"
+dr_region   = "us-west-2"
+
+vpc_cidr = "10.20.0.0/16"
+az_count = 3
+
+# Restrict this to your office/VPN CIDRs before anything real.
+allowed_ingress_cidrs = ["0.0.0.0/0"]
+
+alert_emails = ["ops-team@example.com"]
+
+# DMS source (SQL Server). Prefer injecting the password from Secrets Manager
+# in CI (e.g., TF_VAR_dms_source_password) rather than putting it here.
+dms_source_server   = "10.20.130.10"
+dms_source_database = "sunrise"
+dms_source_username = "dms_user"
+# dms_source_password = "set via TF_VAR_dms_source_password"
+
+dms_target_username = "sunrise_admin"
+# dms_target_password = "set via TF_VAR_dms_target_password"

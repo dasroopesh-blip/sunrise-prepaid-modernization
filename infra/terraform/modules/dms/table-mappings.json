@@ -1,0 +1,31 @@
+{
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "include-payments-schema",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "%"
+      },
+      "rule-action": "include",
+      "filters": []
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "2",
+      "rule-name": "schema-to-lowercase",
+      "rule-target": "schema",
+      "object-locator": { "schema-name": "dbo" },
+      "rule-action": "convert-lowercase"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "3",
+      "rule-name": "table-to-lowercase",
+      "rule-target": "table",
+      "object-locator": { "schema-name": "dbo", "table-name": "%" },
+      "rule-action": "convert-lowercase"
+    }
+  ]
+}
