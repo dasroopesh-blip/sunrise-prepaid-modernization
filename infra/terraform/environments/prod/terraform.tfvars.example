@@ -1,0 +1,31 @@
+# environments/prod/terraform.tfvars.example
+# Copy to terraform.tfvars and edit. NEVER commit real secrets.
+# In prod, `allowed_ingress_cidrs`, `dms_source_server`, and the DMS passwords
+# are REQUIRED (no permissive defaults).
+
+project     = "sunrise"
+environment = "prod"
+aws_region  = "us-east-1"
+dr_region   = "us-west-2"
+
+vpc_cidr = "10.40.0.0/16"
+az_count = 3
+
+# REQUIRED: real corporate/VPN CIDRs only. Do NOT use 0.0.0.0/0 in prod.
+allowed_ingress_cidrs = ["203.0.113.0/24"]
+
+alert_emails = ["payments-oncall@example.com"]
+
+dms_source_server   = "sqlserver-ag-listener.internal"
+dms_source_database = "sunrise"
+dms_source_username = "dms_user"
+# dms_source_password = "set via TF_VAR_dms_source_password (from Secrets Manager)"
+
+dms_target_username = "sunrise_admin"
+# dms_target_password = "set via TF_VAR_dms_target_password (from Secrets Manager)"
+
+# Optional DR failover DNS
+hosted_zone_id = ""
+app_fqdn       = ""
+primary_fqdn   = ""
+dr_fqdn        = ""

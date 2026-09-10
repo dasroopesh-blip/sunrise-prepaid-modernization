@@ -1,0 +1,14 @@
+apiVersion: v2
+name: sunrise-services
+description: >-
+  Helm chart to deploy the Green Dot Sunrise prepaid microservices
+  (Java/Spring Boot) onto the EKS cluster. One chart deploys all four services
+  (authorization, settlement, reporting, card-management) from a single values
+  map, each with a Deployment, Service, HorizontalPodAutoscaler and optional
+  Ingress. This is the app tier that absorbs the extracted stored-proc logic.
+type: application
+version: 0.1.0
+# The version of the Sunrise application shipped by this chart (informational).
+appVersion: "1.0.0"
+maintainers:
+  - name: Sunrise Platform Team

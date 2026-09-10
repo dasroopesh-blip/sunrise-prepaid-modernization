@@ -1,0 +1,112 @@
+# values.yaml — defaults for the Sunrise microservices chart.
+# Override per environment with -f values-dev.yaml / values-prod.yaml.
+
+# ---------------------------------------------------------------------------
+# Global settings shared by every service.
+# ---------------------------------------------------------------------------
+global:
+  # Container image registry (e.g., your ECR repo prefix).
+  imageRegistry: "123456789012.dkr.ecr.us-east-1.amazonaws.com"
+  imagePullPolicy: IfNotPresent
+  # Spring profile passed to every service (dev/staging/prod).
+  springProfile: "dev"
+  # Port the Spring Boot apps listen on.
+  containerPort: 8080
+
+# ---------------------------------------------------------------------------
+# Database connection (Aurora PostgreSQL). Credentials come from a Kubernetes
+# Secret that is synced from AWS Secrets Manager (see README: External Secrets
+# / Secrets Store CSI). We reference the secret by name here, never the value.
+# ---------------------------------------------------------------------------
+database:
+  host: "sunrise-dev-aurora.cluster-xxxxxxxx.us-east-1.rds.amazonaws.com"
+  port: 5432
+  name: "sunrise"
+  # Name of the K8s Secret holding keys: username, password.
+  credentialsSecretName: "sunrise-aurora-credentials"
+
+# ---------------------------------------------------------------------------
+# Spring Boot Actuator health endpoints used for k8s probes.
+# ---------------------------------------------------------------------------
+probes:
+  livenessPath: "/actuator/health/liveness"
+  readinessPath: "/actuator/health/readiness"
+  startupPath: "/actuator/health"
+
+# ---------------------------------------------------------------------------
+# Ingress (shared ALB via the AWS Load Balancer Controller). Disabled by
+# default; enable per environment.
+# ---------------------------------------------------------------------------
+ingress:
+  enabled: false
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+  host: "api.sunrise.example.com"
+
+# ---------------------------------------------------------------------------
+# The services. Each entry becomes a Deployment + Service + HPA (+ Ingress
+# path). Add/remove services here — the templates loop over this map.
+# ---------------------------------------------------------------------------
+services:
+  authorization:
+    enabled: true
+    image: "sunrise/authorization-service"
+    tag: "1.0.0"
+    replicas: 3
+    path: "/api/authorization"
+    resources:
+      requests: { cpu: "500m", memory: "1Gi" }
+      limits: { cpu: "1", memory: "2Gi" }
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 12
+      targetCPUUtilizationPercentage: 65
+
+  settlement:
+    enabled: true
+    image: "sunrise/settlement-service"
+    tag: "1.0.0"
+    replicas: 3
+    path: "/api/settlement"
+    resources:
+      requests: { cpu: "500m", memory: "1Gi" }
+      limits: { cpu: "1", memory: "2Gi" }
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 65
+
+  reporting:
+    enabled: true
+    image: "sunrise/reporting-service"
+    tag: "1.0.0"
+    replicas: 2
+    path: "/api/reporting"
+    resources:
+      requests: { cpu: "250m", memory: "512Mi" }
+      limits: { cpu: "500m", memory: "1Gi" }
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 70
+
+  card-management:
+    enabled: true
+    image: "sunrise/card-management-service"
+    tag: "1.0.0"
+    replicas: 2
+    path: "/api/cards"
+    resources:
+      requests: { cpu: "250m", memory: "512Mi" }
+      limits: { cpu: "500m", memory: "1Gi" }
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70

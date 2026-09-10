@@ -1,0 +1,23 @@
+# environments/staging/terraform.tfvars.example
+# Copy to terraform.tfvars and edit. NEVER commit real secrets.
+
+project     = "sunrise"
+environment = "staging"
+aws_region  = "us-east-1"
+dr_region   = "us-west-2"
+
+vpc_cidr = "10.30.0.0/16"
+az_count = 3
+
+# Restrict to office/VPN CIDRs.
+allowed_ingress_cidrs = ["0.0.0.0/0"]
+
+alert_emails = ["ops-team@example.com"]
+
+dms_source_server   = "10.30.130.10"
+dms_source_database = "sunrise"
+dms_source_username = "dms_user"
+# dms_source_password = "set via TF_VAR_dms_source_password"
+
+dms_target_username = "sunrise_admin"
+# dms_target_password = "set via TF_VAR_dms_target_password"

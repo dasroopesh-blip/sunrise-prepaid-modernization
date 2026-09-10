@@ -107,6 +107,9 @@ Beyond the design docs, this repo now contains the full **E2E implementation sca
 | **Stored-proc extraction** | [`stored-proc-extraction/`](stored-proc-extraction/) | Inventory + classification templates and a worked **before/after**: a T-SQL settlement proc relocated into a Spring Boot `@Service` with CRUD-only JPA repos + parity tests. |
 | **Validation** | [`validation/`](validation/) | 3-layer harness: DMS row validation, financial reconciliation SQL (zero settled-amount drift), and a logic-parity approach. |
 | **Runbooks** | [`runbooks/`](runbooks/) | Phase 1 AG cutover, Phase 2a Aurora cutover (per slice), 1,771-article replication decommission, and rollback. |
+| **Environments** | [`infra/terraform/environments/`](infra/terraform/environments/) | `dev`, `staging`, and production-hardened `prod` compositions (HA NAT, deletion protection, larger sizing, required ingress CIDRs, DR failover DNS). |
+| **CI/CD** | [`.github/workflows/terraform-ci.yml`](.github/workflows/terraform-ci.yml) | GitHub Actions: `terraform fmt -check`, per-env `validate` (`-backend=false`), and OIDC-gated `plan` on PRs — the Phase 1 DevOps automation goal. |
+| **App deployment (Helm)** | [`deploy/helm/sunrise-services/`](deploy/helm/sunrise-services/) | Helm chart for the 4 Spring Boot microservices (Deployment, Service, HPA, ALB Ingress, Actuator probes, Secrets-Manager-synced DB creds). |
 
 ### How the pieces fit
 
@@ -117,6 +120,9 @@ flowchart LR
     MIG --> VAL[validation\n3-layer harness]
     SP --> VAL
     VAL --> RUN[runbooks\ncutover + rollback]
+    SP --> HELM[deploy/helm\nSpring Boot on EKS]
+    IAC --> HELM
+    CI[.github CI\nfmt/validate/plan] -.gates.-> IAC
 ```
 
 > IaC is **learning-grade scaffolding** (complete and coherent, sensible defaults) — review

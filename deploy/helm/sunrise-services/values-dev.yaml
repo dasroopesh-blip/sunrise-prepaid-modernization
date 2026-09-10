@@ -1,0 +1,27 @@
+# values-dev.yaml — dev overrides (smaller, cheaper, ingress off).
+# Usage: helm upgrade --install sunrise ./sunrise-services -f values-dev.yaml
+
+global:
+  springProfile: "dev"
+
+database:
+  host: "sunrise-dev-aurora.cluster-xxxxxxxx.us-east-1.rds.amazonaws.com"
+  name: "sunrise"
+  credentialsSecretName: "sunrise-aurora-credentials"
+
+ingress:
+  enabled: false
+
+services:
+  authorization:
+    replicas: 1
+    autoscaling: { enabled: false, minReplicas: 1, maxReplicas: 3, targetCPUUtilizationPercentage: 70 }
+  settlement:
+    replicas: 1
+    autoscaling: { enabled: false, minReplicas: 1, maxReplicas: 3, targetCPUUtilizationPercentage: 70 }
+  reporting:
+    replicas: 1
+    autoscaling: { enabled: false, minReplicas: 1, maxReplicas: 2, targetCPUUtilizationPercentage: 70 }
+  card-management:
+    replicas: 1
+    autoscaling: { enabled: false, minReplicas: 1, maxReplicas: 2, targetCPUUtilizationPercentage: 70 }

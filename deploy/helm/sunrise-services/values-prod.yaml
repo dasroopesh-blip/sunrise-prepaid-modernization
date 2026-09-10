@@ -1,0 +1,36 @@
+# values-prod.yaml — production overrides.
+# Usage: helm upgrade --install sunrise ./sunrise-services -f values-prod.yaml
+
+global:
+  springProfile: "prod"
+  imagePullPolicy: IfNotPresent
+
+database:
+  host: "sunrise-prod-aurora.cluster-xxxxxxxx.us-east-1.rds.amazonaws.com"
+  name: "sunrise"
+  credentialsSecretName: "sunrise-aurora-credentials"
+
+ingress:
+  enabled: true
+  className: "alb"
+  host: "api.sunrise.example.com"
+
+services:
+  authorization:
+    replicas: 6
+    autoscaling: { enabled: true, minReplicas: 6, maxReplicas: 24, targetCPUUtilizationPercentage: 60 }
+    resources:
+      requests: { cpu: "1", memory: "2Gi" }
+      limits: { cpu: "2", memory: "4Gi" }
+  settlement:
+    replicas: 6
+    autoscaling: { enabled: true, minReplicas: 6, maxReplicas: 20, targetCPUUtilizationPercentage: 60 }
+    resources:
+      requests: { cpu: "1", memory: "2Gi" }
+      limits: { cpu: "2", memory: "4Gi" }
+  reporting:
+    replicas: 3
+    autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 10, targetCPUUtilizationPercentage: 65 }
+  card-management:
+    replicas: 3
+    autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 12, targetCPUUtilizationPercentage: 65 }

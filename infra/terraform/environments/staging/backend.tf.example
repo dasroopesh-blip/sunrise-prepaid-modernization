@@ -1,0 +1,11 @@
+# environments/staging/backend.tf.example
+# Copy to backend.tf and fill in the names from the bootstrap stack outputs.
+terraform {
+  backend "s3" {
+    bucket         = "sunrise-tfstate-CHANGE_ME"
+    key            = "environments/staging/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "sunrise-tflock-CHANGE_ME"
+    encrypt        = true
+  }
+}

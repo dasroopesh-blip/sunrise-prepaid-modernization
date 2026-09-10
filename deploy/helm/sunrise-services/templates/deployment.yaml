@@ -1,0 +1,79 @@
+{{/*
+One Deployment per enabled service. We iterate the .Values.services map; each
+key is the service name and the value is its config. Business logic that used
+to live in SQL Server stored procedures runs in these Spring Boot pods.
+*/}}
+{{- range $name, $cfg := .Values.services }}
+{{- if $cfg.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "sunrise.labels" (dict "svc" $name "root" $) | nindent 4 }}
+spec:
+  # If autoscaling is on, the HPA owns the replica count; otherwise use replicas.
+  {{- if not $cfg.autoscaling.enabled }}
+  replicas: {{ $cfg.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "sunrise.selectorLabels" (dict "svc" $name "root" $) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sunrise.labels" (dict "svc" $name "root" $) | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: {{ include "sunrise.image" (dict "cfg" $cfg "root" $) }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $.Values.global.containerPort }}
+          env:
+            # Spring profile selects environment-specific config.
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ $.Values.global.springProfile | quote }}
+            # ---- Database connection (Aurora PostgreSQL) ----
+            - name: DB_HOST
+              value: {{ $.Values.database.host | quote }}
+            - name: DB_PORT
+              value: {{ $.Values.database.port | quote }}
+            - name: DB_NAME
+              value: {{ $.Values.database.name | quote }}
+            # Credentials come from a K8s Secret synced from AWS Secrets Manager.
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.database.credentialsSecretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.database.credentialsSecretName }}
+                  key: password
+          resources:
+            {{- toYaml $cfg.resources | nindent 12 }}
+          # ---- Health probes hit Spring Boot Actuator endpoints ----
+          startupProbe:
+            httpGet:
+              path: {{ $.Values.probes.startupPath }}
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: {{ $.Values.probes.livenessPath }}
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: {{ $.Values.probes.readinessPath }}
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+{{- end }}
+{{- end }}
